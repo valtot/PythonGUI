@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+
 class window(QMainWindow):
     def __init__(self, parent = None):
         super(window, self).__init__(parent)
@@ -13,15 +14,21 @@ class window(QMainWindow):
         b1.clicked.connect(b1_clicked)
         b2 = QPushButton() # class inheritance once again
         b2.setText("Button2")
+        
         b2.clicked.connect(b2_clicked)
 
         b3 = QPushButton() # class inheritance once again
         b3.setText("Button3")
         b3.clicked.connect(b3_clicked)
 
-        grid.addWidget(b1,0,0,2,1)
+        b4 = QLineEdit("ciao")
+        # grid.addRow("integer validator", b4)
+        b4.setDisabled(True)
+
+        grid.addWidget(b1, 0,0,1,1)
         grid.addWidget(b2, 0,1,1,1)
         grid.addWidget(b3, 1,1,1,1)
+        grid.addWidget(b4, 1,0,1,1)
 
         widget.setLayout(grid)
         self.setCentralWidget(widget)           # Cannot set QxxLayout directly on the QMainWindow
