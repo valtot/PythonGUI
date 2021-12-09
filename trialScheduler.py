@@ -1,6 +1,6 @@
 import numpy as np
 import random
-class TrialManager():
+class TrialScheduler():
     '''TrialManager() is a class computing the different tipes of trials that can be used in an operant conditioning paradigm
     It is possible to pass the following parameters to the constructor function:
         - numOfTrials :             default numOfTrials = 80
@@ -24,7 +24,7 @@ class TrialManager():
         trialList                    list of the pseudorandomized trial codes
         trialDict                    dictionary indicating each type of trial and the number of occurrences in trialList
     METHODS
-        reshuffle                    returns trialList after repeting reshuffling of trial codes.
+        reshuffle                    shuffle trial codes in trialList.
         '''
     # constructor function
     def __init__(self,numOfTrials =80,
@@ -67,7 +67,7 @@ class TrialManager():
         # list = self.trialList
         ind = self.trialDict["Reminders"]
         random.shuffle(self.trialList[ind:])
-        return self.trialList        
+        return self       
         
         
 
@@ -75,9 +75,9 @@ class TrialManager():
 
 
 if __name__ == '__main__':
-    a = TrialManager(trialTypesRatio={'a':1, 'b':2})
+    a = TrialScheduler(trialTypesRatio={'a':1, 'b':2})
     # b = ["FC" for i in range(5)]
     # b = ["FC"] * 5
     # print(type(a.trialDict['Reminders']))
-    print(a.reshuffle())
+    print(a.reshuffle().trialList)
     
