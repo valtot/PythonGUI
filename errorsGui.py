@@ -8,5 +8,12 @@ class MonitorError(Exception):
             msg = 'Unable to compute frame rate for monitor {}'.format(mon)
         super().__init__(msg)
 
+class ExperimentConfigurationError(Exception):
+    def __init__(self, msg = None):
+        if msg is None:
+            msg = 'Experiment settings are unconsistent'
+        super().__init__(msg)
+
+
 if __name__ == '__main__':
     raise MonitorError

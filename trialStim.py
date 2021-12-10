@@ -18,8 +18,9 @@ class TestingSession(TrialScheduler):
         
 
     def begin(self):
-        for trial in self.trialList:
-            singleTrial = TrialStimulus(stimOri=self.trialTypesOri[trial])
+        singleTrial = TrialStimulus(stimOri=self.trialTypesOri[self.trialList[0]])
+        for trial in self.trialList[1:]:
+            singleTrial.change(ori=self.trialTypesOri[trial])
             singleTrial.display()
             pass
         singleTrial.closeWin()
@@ -87,8 +88,8 @@ class TrialStimulus():
                     autoDraw = False)
 
         # compute framerate
-        # self._frameRate = self.win.getActualFrameRate(nIdentical=50, nMaxFrames=500, nWarmUpFrames=50, threshold=1)
-        self._frameRate = 60
+        self._frameRate = self.win.getActualFrameRate(nIdentical=50, nMaxFrames=500, nWarmUpFrames=50, threshold=1)
+        # self._frameRate = 60
 
         if self._frameRate == None:
             raise MonitorError
@@ -101,12 +102,21 @@ class TrialStimulus():
         print(self._grayFrames)
         
     # something went wrong here: stimulus continously updating the window
-    # def change(self, tex = self._gratingtext,
-    #                  ori = self._stimOri,
-    #                  sf = self._stimSf
-    #                 ):
+    def change(self, tex = None,
+                     ori = None,
+                     sf = None
+                    ):
+        if tex == None:
+            tex = self._gratingTex
+        if ori == None:
+            ori = self._stimOri
+        if sf == None:
+            sf = self._stimSf
 
-    #     self.grating.sf = tex
+
+        self.grating.sf = sf
+        self.grating.ori = ori
+        self.grating.tex = tex
 
         pass
     def display(self):
@@ -128,4 +138,7 @@ class TrialStimulus():
 
 if __name__ == '__main__':
     a = TestingSession()
+    # a.change(tex='sin')
+    # a.display()
+    # a.closeWin()
     a.begin()

@@ -27,14 +27,14 @@ class TrialScheduler():
         reshuffle                    shuffle trial codes in trialList.
         '''
     # constructor function
-    def __init__(self,numOfTrials =80,
+    def __init__(self,numOfTrials =3,
                         trialTypesRatio = 
                         {"FC": 1,
                         "QC": 1, 
                         "NC" : 0,
                         "Pavlovian" : 0,
                         "AdLibitum" : 0},
-                        numOfReminderPavlovian = 4,
+                        numOfReminderPavlovian = 0,
                         percentPavlovian = 0.10
                         ):
         #ATTRIBUTES
@@ -70,9 +70,6 @@ class TrialScheduler():
         return self       
         
         
-
-
-
 
 if __name__ == '__main__':
     a = TrialScheduler(trialTypesRatio={'a':1, 'b':2})
