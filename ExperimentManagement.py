@@ -1,8 +1,7 @@
-import sys
 import random
-from psychopy import visual, event, monitors
+from psychopy import visual, event, monitors, core
 from errorsGui import ExperimentConfigurationError, MonitorError
-
+from ESP import ESP32
 
 class ExperimentManager():
     '''ExperimentManager() is a class computing the different tipes of trials that can be used in an operant conditioning paradigm
@@ -101,7 +100,31 @@ class ExperimentManager():
                         #monitor parameters
                         monitorUsed = 'testMonitor',
                         dist_cm = 20,
-                        mon_width_cm = 30
+                        mon_width_cm = 30,
+        
+                        serialCodeDict = {
+                            "FC" : {
+                                    "beginningOfTrials": "T",
+                                    "responseWindow" : "Z" ,
+                                    "trialType" : "conditional"},
+                            "QC" : {
+                                    "beginningOfTrials": "T",
+                                    "responseWindow" : "X" ,
+                                    "trialType" : "conditional"},
+                            "NC" : {
+                                    "beginningOfTrials": "T",
+                                    "responseWindow" : "C" ,
+                                    "trialType" : "conditional"},
+                            "Pavlovian" : {
+                                    "beginningOfTrials": "P",
+                                    "responseWindow" : None,
+                                    "trialType" : "pavlovian"},
+                            "AdLibitum" : {
+                                    "beginningOfTrials": "A",
+                                    "responseWindow" : None ,
+                                    "trialType" : "adLibitum"}
+                                    },
+                        esp = None
                         ):
         #ATTRIBUTES
         #initialized
@@ -123,6 +146,9 @@ class ExperimentManager():
         self._monitorUsed = monitorUsed
         self._dist_cm = dist_cm
         self._mon_width_cm = mon_width_cm
+
+        self._esp = esp
+        self._serialCodeDict = serialCodeDict
 
 
         # check for uncorrect arguments passed to the constructor
@@ -166,7 +192,7 @@ class ExperimentManager():
         #prevent projection of visual stimulus for ad libitum delivery of Ensure
         #initializes trial object which will be updated by iterating through the list of trials
         
-        singleTrial = TrialStimulus(
+        self.singleTrial = TrialStimulus(
                         stimTime = self._stimTime, #seconds
                         respTime = self._respTime,
                         interTrial = self._interTrial,
@@ -183,25 +209,34 @@ class ExperimentManager():
                         monitorUsed = self._monitorUsed,
                         dist_cm = self._dist_cm,
                         mon_width_cm = self._mon_width_cm,
+
+                        esp = self._esp,
+                        serialTrialCodes = None
+
                     )
-        if self.trialList[0] == "AdLibitum":
-            singleTrial.gray.draw()
-            singleTrial.win.flip()
-        else:
-            #perform action on arduino
-            pass #perform action on arduino
-        for trial in self.trialList[1:]:
+        for trial in self.trialList:
+            if self._esp != None:
+                self.singleTrial._serialTrialCodes = self._serialCodeDict[trial]
+                
             if trial == "AdLibitum":
-                singleTrial.gray.draw()
-                singleTrial.win.flip()
+                self.singleTrial.display_gray()
+            else:
+                self.singleTrial.change(ori=self._trialTypesOri[trial])
+                self.singleTrial.display()
                 #perform action on arduino
-                continue
-            singleTrial.change(ori=self._trialTypesOri[trial])
-            singleTrial.display()
+                # pass #perform action on arduino
         
-        singleTrial.closeWin()
+            # if trial == "AdLibitum":
+            #     singleTrial.gray.draw()
+            #     singleTrial.win.flip()
+            #     #perform action on arduino
+            #     continue
+            # singleTrial.change(ori=self._trialTypesOri[trial])
+            # singleTrial.display()
+        
+        self.singleTrial.closeWin()
     def terminate(self):
-        return sys.exit()
+        return self.singleTrial.closeWin()
         
 
 class TrialStimulus():
@@ -219,7 +254,14 @@ class TrialStimulus():
                 #monitor parameters
                 monitorUsed = 'testMonitor',
                 dist_cm = 20,
-                mon_width_cm = 30
+                mon_width_cm = 30,
+
+                serialTrialCodes = {
+                    "beginningOfTrials": "T",
+                    "responseWindow": "Z",
+                    "trialType": "conditional"  
+                },
+                esp = None
                 ):
         
                         
@@ -268,8 +310,11 @@ class TrialStimulus():
         
         # pre-compute number of frames for graphical display
         self._stimFrames = int(round(stimTime*self._frameRate))
-        self._grayFrames = int(round((respTime + interTrial)*self._frameRate))
+        self._respFrames = int(round(respTime *self._frameRate))
+        self._interTrialFrames = int(round(interTrial* self._frameRate))
         
+        self._esp = esp
+        self._serialTrialCodes = serialTrialCodes
         
     # something went wrong here: stimulus continously updating the window
     def change(self, tex = None,
@@ -288,20 +333,37 @@ class TrialStimulus():
         self.grating.ori = ori
         self.grating.tex = tex
 
-        pass
+        
     def display(self):
         # Make the mouse invisible
         event.Mouse(visible=False)
 
+        if self._esp != None:
+            self._esp.write(self._serialTrialCodes["beginningOfTrials"])
+            
 
         for fr in range(self._stimFrames):
             self.grating.phase += (1/float(self._frameRate))*self._stimTf
             self.grating.draw()
             self.win.flip()
 
-        for fr in range(self._grayFrames):
+        for fr in range(self._respFrames):
+            if self._esp != None:
+                if self._esp != None:
+                    self._esp.write(self._serialTrialCodes["responseWindow"])
+                
             self.gray.draw()
             self.win.flip()
+        for fr in range(self._interTrialFrames):
+            if self._esp != None:
+                self._esp.write("I")
+            self.gray.draw()
+            self.win.flip()
+    def display_gray(self):
+        for fr in range(self._stimFrames + self._respFrames + self._interTrialFrames):
+            self.gray.draw()
+            self.win.flip()
+
     def closeWin(self):
         self.win.close()
 
@@ -309,8 +371,14 @@ class TrialStimulus():
 
 
 if __name__ == '__main__':
-    a = ExperimentManager(numOfTrials=2,
-        trialTypesRatio={"AdLibitum" : 1}
-    )
+    a = ExperimentManager(
+        
+        numOfTrials = 4,
+        respTime=1,
+        interTrial=1,
+        trialTypesRatio={'FC' :1, "AdLibitum":0},
+        percentPavlovian=0,
+        esp=None
+        )
     a.begin()
 
