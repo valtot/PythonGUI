@@ -4,6 +4,6 @@ Collection of Python scripts to communicate with a ESP32 microcontroller for a v
 
 To do:
 - improve serial communication (indicating different trial phases)
-- implemente multitreading for sending/receiving information to/from the controller
+- implemente multithreading for sending/receiving information to/from the controller
 - implementation of the code in a PyQt GUI
 
