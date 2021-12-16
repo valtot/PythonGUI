@@ -1,9 +1,6 @@
 from psychopy import visual, core, event, monitors
 from errorsGui import MonitorError
-import numpy as np
 import sys
-
-# import sys
 
 # EXPERIMENT SETTINGS
 stimTime = 2 #seconds
@@ -62,7 +59,7 @@ stimFrames = int(round(stimTime*frameRate))
 grayFrames = int(round((respTime + interTrial)*frameRate))
 
 # Make the mouse invisible
-# event.Mouse(visible=False)
+event.Mouse(visible=False)
 
 
 for fr in range(stimFrames):

@@ -1,6 +1,7 @@
 import random
-from psychopy import visual, event, monitors, core
-from errorsGui import ExperimentConfigurationError, MonitorError
+from threading import Thread
+from psychopy import visual, event, monitors
+from errorsGui import ExperimentConfigurationError, MonitorError, PathError
 from ESP import ESP32
 
 class ExperimentManager():
@@ -237,6 +238,22 @@ class ExperimentManager():
         self.singleTrial.closeWin()
     def terminate(self):
         return self.singleTrial.closeWin()
+                
+    def run(self):
+        try:
+            t1 = Thread(target=self.begin(), args=())
+            t2 = Thread(target=self._esp.print(), args=())
+        except PathError:
+            print("Invalid path provided as output of esp class")
+        # reads, should be implemented saving file indication
+        # with open('somefile.txt', 'a') as the_file:
+        #    the_file.write('Hello\n')
+
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
+        
         
 
 class TrialStimulus():
@@ -371,14 +388,17 @@ class TrialStimulus():
 
 
 if __name__ == '__main__':
-    a = ExperimentManager(
+    try:
+        a = ExperimentManager(
         
-        numOfTrials = 4,
-        respTime=1,
-        interTrial=1,
-        trialTypesRatio={'FC' :1, "AdLibitum":0},
-        percentPavlovian=0,
-        esp=None
+            numOfTrials = 4,
+            respTime=1,
+            interTrial=1,
+            trialTypesRatio={'FC' :1, "AdLibitum":0},
+            percentPavlovian=1.1,
+            esp=None
         )
-    a.begin()
+        a.begin()
+    except ExperimentConfigurationError:
+        print('cazzo')
 
