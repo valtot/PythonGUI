@@ -40,8 +40,8 @@ class ESP32:
         return msg
 
     def write(self, msg):
-        self.ser.write(msg)
-        print(msg)
+        self.ser.write(msg.encode('utf-8'))
+        # print(msg)
         pass
         
 
@@ -53,9 +53,10 @@ if (__name__  == "__main__"):
 
     # Instantiates an object
     esp = ESP32("COM3", 115200)
-
     with esp:
-        while True:
-            if esp.dataWaiting():
-                message = esp.read()
-                print(message)
+        esp.write('K')
+    # with esp:
+    #     while True:
+    #         if esp.dataWaiting():
+    #             message = esp.write('K')
+                # print(message)
