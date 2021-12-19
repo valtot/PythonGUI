@@ -1,9 +1,9 @@
 import typing as tp
-from psychopy import monitors
+# from psychopy import monitors
 
-mon = monitors.getAllMonitors()
+# mon = monitors.getAllMonitors()
 class MonitorError(Exception):
-    def __init__(self, mon:tp.TypeVar('str') = mon[0], msg = None):
+    def __init__(self, mon:tp.TypeVar('str'), msg = None):
         if msg is None:
             msg = 'Unable to compute frame rate for monitor {}'.format(mon)
         super().__init__(msg)
@@ -20,12 +20,9 @@ class PathError(Exception):
             msg = 'Improper path setting'
         super().__init__(msg)
 
-
-class PathError(Exception):
-    def __init__(self, msg = None):
-        if msg is None:
-            msg = 'Experiment settings are unconsistent'
-        super().__init__(msg)
-
 if __name__ == '__main__':
-    raise MonitorError
+
+    try :
+        pass
+    except MonitorError:
+        print('error')

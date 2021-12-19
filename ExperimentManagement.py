@@ -163,18 +163,25 @@ class ExperimentManager():
 
         
         #computes the sequence of trials representing the 'body of the experiment'
-        sumTrialWeights = sum(self._trialTypesRatio.values()) 
+        sumTrialWeights = sum(self._trialTypesRatio.values())
         n_trials = round(self._numOfTrials*(1-self._percentPavlovian))
+
+        # for trial in self._trialTypesRatio:
+        #     trialWeight = self._trialTypesRatio[trial]/sumTrialWeights
+        #     numTrial = round(n_trials*trialWeight)
+        #     self.trialList.extend([trial]*numTrial)
+        #     self.trialDict[trial] = numTrial
+
         for trial in self._trialTypesRatio:
-            trialWeight = self._trialTypesRatio[trial]/sumTrialWeights
-            numTrial = round(n_trials*trialWeight)
-            self.trialList.extend([trial]*numTrial)
-            self.trialDict[trial] = numTrial
+            trialWeight = {trial : self._trialTypesRatio[trial]/sumTrialWeights}
+        for trial in range(n_trials):
+            self.trialList = random.choices(list(self._trialTypesRatio.keys()), list(self._trialTypesRatio.values()), k =n_trials)
+            self.trialDict = {x:self.trialList.count(x) for x in self.trialList}
 
         # adds pavlovian trials intermingled in the main part of the session
         self.trialDict["Pavlovian"] = self._numOfTrials - n_trials
         self.trialList.extend(["Pavlovian"]*self.trialDict["Pavlovian"])
-        random.shuffle(self.trialList)
+        # random.shuffle(self.trialList)
 
         #add reminders presented at the beginning
         for n in range(self._numOfReminderPavlovian): 
