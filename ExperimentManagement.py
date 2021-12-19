@@ -366,8 +366,7 @@ class TrialStimulus():
 
         for fr in range(self._respFrames):
             if self._esp != None:
-                if self._esp != None:
-                    self._esp.write(self._serialTrialCodes["responseWindow"])
+                self._esp.write(self._serialTrialCodes["responseWindow"])
                 
             self.gray.draw()
             self.win.flip()
