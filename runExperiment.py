@@ -1,9 +1,4 @@
-from ExperimentManagement import ExperimentManager
-import json
 import time
-from multiprocessing import Process
-
-
 def thread_func1(fileN:str):
 
     for i in range(10):
@@ -14,10 +9,18 @@ def thread_func1(fileN:str):
         
     
 if __name__ == '__main__':
+    from ExperimentManagement import ExperimentManager
+    import json
+    from errorsGui import PathError
+    from multiprocessing import Process
+    import os 
+
     settingFile = r"C:\Users\valen\Desktop\miceSettings\gNex004.json"
     savingFile = r"C:\Users\valen\Desktop\miceSettings\newFile.txt"
 
-
+    if not os.path.isfile(settingFile):
+        raise PathError()
+    
 
 
     
@@ -61,14 +64,8 @@ if __name__ == '__main__':
 
 
     t1 = Process(target=thread_func1, args=(savingFile,))
-    # t2 = Process(target=exp.begin(), args=())
     t1.start()
-    time.sleep(3)
     exp.begin()
-
-
-    # t2.start()
     t1.join()
-    # t2.join()
     print(f'{exp.trialDict} and {exp.trialList}')
 

@@ -1,8 +1,7 @@
 import random
-from threading import Thread
+# from threading import Thread
 from psychopy import visual, event, monitors
 from errorsGui import ExperimentConfigurationError, MonitorError, PathError
-from ESP import ESP32
 
 class ExperimentManager():
     '''ExperimentManager() is a class computing the different tipes of trials that can be used in an operant conditioning paradigm
@@ -231,35 +230,25 @@ class ExperimentManager():
             else:
                 self.singleTrial.change(ori=self._trialTypesOri[trial])
                 self.singleTrial.display()
-                #perform action on arduino
-                # pass #perform action on arduino
-        
-            # if trial == "AdLibitum":
-            #     singleTrial.gray.draw()
-            #     singleTrial.win.flip()
-            #     #perform action on arduino
-            #     continue
-            # singleTrial.change(ori=self._trialTypesOri[trial])
-            # singleTrial.display()
-        
+
         self.singleTrial.closeWin()
     def terminate(self):
         return self.singleTrial.closeWin()
                 
-    def run(self):
-        try:
-            t1 = Thread(target=self.begin(), args=())
-            t2 = Thread(target=self._esp.print(), args=())
-        except PathError:
-            print("Invalid path provided as output of esp class")
-        # reads, should be implemented saving file indication
-        # with open('somefile.txt', 'a') as the_file:
-        #    the_file.write('Hello\n')
+    # def run(self):
+    #     try:
+    #         t1 = Thread(target=self.begin(), args=())
+    #         t2 = Thread(target=self._esp.print(), args=())
+    #     except PathError:
+    #         print("Invalid path provided as output of esp class")
+    #     # reads, should be implemented saving file indication
+    #     # with open('somefile.txt', 'a') as the_file:
+    #     #    the_file.write('Hello\n')
 
-        t1.start()
-        t2.start()
-        t1.join()
-        t2.join()
+    #     t1.start()
+    #     t2.start()
+    #     t1.join()
+    #     t2.join()
         
         
 
@@ -330,7 +319,7 @@ class TrialStimulus():
         self._frameRate = self.win.getActualFrameRate(nIdentical=50, nMaxFrames=500, nWarmUpFrames=50, threshold=1)
 
         if self._frameRate == None:
-            raise MonitorError
+            raise MonitorError(monitorUsed)
         
         # pre-compute number of frames for graphical display
         self._stimFrames = int(round(stimTime*self._frameRate))
@@ -401,10 +390,11 @@ if __name__ == '__main__':
             respTime=1,
             interTrial=1,
             trialTypesRatio={'FC' :1, "AdLibitum":0},
-            percentPavlovian=1.1,
+            percentPavlovian=0,
+            mon_width_cm= 61,
             esp=None
         )
         a.begin()
     except ExperimentConfigurationError:
-        print('cazzo')
+        print('error')
 
