@@ -1,20 +1,31 @@
-# trialTypesRatio ={"FC": 1, "QC": 1, "NC" : 0, "Pavlovian" : 0,"AdLibitum" : 0}
-# trialTypesOri = {'Pavlovian':-20, 'FC': 0, 'QC':90, 'NC':45}
-
-# a = sum(trialTypesRatio.values())
-# print(a)
+from multiprocessing import Process
 import os
+import time
 
-f = r'C:\Users\valen\Desktop'
-p =  os.path.join(f, 'nnn', 'ccc.docx')
-e = os.path.join(f, 'newfile.txt')
-print(os.path.dirname(e))
-if   os.path.exists(os.path.dirname(e)):
-    try:
-        with open(p, 'a') as fobj:
-            for i in fobj:
-                print(i)
-    except PermissionError :
-        print('O')
-else:
-    print('merda')
+def info(title):
+    print(title)
+    print('module name:', __name__)
+    print('parent process:', os.getppid())
+    print('process id:', os.getpid())
+
+def f(name):
+    for i in range(4):
+    # info('function f')
+        time.sleep(1)
+        print('hello', name)
+
+def g(name):
+    for i in range(4):
+    # info('function f')
+        time.sleep(1)
+        print('hello', name)
+
+if __name__ == '__main__':
+    info('main line')
+    p = Process(target=f, args=('bob',))
+    r = Process(target=g, args=('karl',))
+    p.start()
+    time.sleep(0.5)
+    r.start()
+    p.join()
+    r.join()

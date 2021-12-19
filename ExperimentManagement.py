@@ -293,7 +293,7 @@ class TrialStimulus():
 
         #instances of experiment objects
         self.win = visual.Window(units='deg',
-                    size = [800, 600],
+                    size = [400, 400],
                     fullscr=False,
                     monitor=self._mon)
 

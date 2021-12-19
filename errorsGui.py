@@ -15,5 +15,11 @@ class ExperimentConfigurationError(Exception):
         super().__init__(msg)
 
 
+class PathError(Exception):
+    def __init__(self, msg = None):
+        if msg is None:
+            msg = 'Experiment settings are unconsistent'
+        super().__init__(msg)
+
 if __name__ == '__main__':
     raise MonitorError
