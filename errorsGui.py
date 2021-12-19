@@ -14,6 +14,12 @@ class ExperimentConfigurationError(Exception):
             msg = 'Experiment settings are unconsistent'
         super().__init__(msg)
 
+class PathError(Exception):
+    def __init__(self, msg = None):
+        if msg is None:
+            msg = 'Improper path setting'
+        super().__init__(msg)
+
 
 class PathError(Exception):
     def __init__(self, msg = None):

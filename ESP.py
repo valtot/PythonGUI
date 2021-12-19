@@ -1,8 +1,9 @@
-import serial
+import serial, os
+from errorsGui import PathError
 
 class ESP32:
     # Class contructor
-    def __init__(self, port, baudRate):
+    def __init__(self, port, baudRate, output = 'terminal'):
         self.port = port
         self.baudRate = baudRate
 
@@ -13,6 +14,7 @@ class ESP32:
         self.ser.port = port
         self.ser.baudrate = baudRate
         self.ser.timeout = .2
+        self.output = output
         # self.ser.parity = serial.PARITY_EVEN
 
 
@@ -38,13 +40,29 @@ class ESP32:
         msg = self.ser.readline()
         msg = msg.decode('utf-8').rstrip()
         return msg
+#-----------------------------------------------------------------------------------------        
+#added by vale
+    def print(self):
+        msg = self.read()
+        if self.output == 'terminal':
+            print(msg)
+        else:
+            if os.path.exists(os.path.dirname(self.output)):
+                if os.path.isfile(os.path(self.output)): 
+                    raise PathError("File already present")
+                try:
+                    with open(self.output, 'a') as fobj:
+                        fobj.write(msg)
+                except PermissionError:
+                    raise PathError('File writing operation was requested on a directory')
+            else:
+                raise PathError('Invalid string indicated as path')
+#-------------------------------------------------------------------------------------------
 
-    def write(self, msg):
+    def write(self, msg:str):
         self.ser.write(msg.encode('utf-8'))
         # print(msg)
         pass
-        
-
 
 
 
